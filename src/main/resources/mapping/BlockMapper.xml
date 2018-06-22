@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.viscu.UI.dao.BlockDao" >
+  <resultMap id="BaseResultMap" type="com.viscu.UI.domain.Block" >
+    <id column="block_id" property="blockId" jdbcType="INTEGER" />
+    <result column="block_describe" property="blockDescribe" jdbcType="VARCHAR" />
+    <result column="block_name" property="blockName" jdbcType="VARCHAR" />
+    <result column="block_article_num" property="blockArticleNum" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    block_id, block_describe, block_name, block_article_num
+  </sql>
+  <!--查找某个模块-->
+  <select id="findBlockByBlockId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from block
+    where block_id = #{blockId,jdbcType=INTEGER}
+  </select>
+
+  <!--获得所有的版块-->
+  <select id="getAllBlock" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from block
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from block
+    where block_id = #{blockId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.viscu.UI.domain.Block" >
+    insert into block (block_id, block_describe, block_name, 
+      block_article_num)
+    values (#{blockId,jdbcType=INTEGER}, #{blockDescribe,jdbcType=VARCHAR}, #{blockName,jdbcType=VARCHAR}, 
+      #{blockArticleNum,jdbcType=INTEGER})
+  </insert>
+
+  <!--添加新的帖子-->
+  <insert id="addBlock" parameterType="com.viscu.UI.domain.Block" >
+    insert into block
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="blockId != null" >
+        block_id,
+      </if>
+      <if test="blockDescribe != null" >
+        block_describe,
+      </if>
+      <if test="blockName != null" >
+        block_name,
+      </if>
+      <if test="blockArticleNum != null" >
+        block_article_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="blockId != null" >
+        #{blockId,jdbcType=INTEGER},
+      </if>
+      <if test="blockDescribe != null" >
+        #{blockDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="blockName != null" >
+        #{blockName,jdbcType=VARCHAR},
+      </if>
+      <if test="blockArticleNum != null" >
+        #{blockArticleNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <!--更新某个模块-->
+  <update id="updateBlockByBlock" parameterType="com.viscu.UI.domain.Block" >
+    update block
+    <set >
+      <if test="blockDescribe != null" >
+        block_describe = #{blockDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="blockName != null" >
+        block_name = #{blockName,jdbcType=VARCHAR},
+      </if>
+      <if test="blockArticleNum != null" >
+        block_article_num = #{blockArticleNum,jdbcType=INTEGER},
+      </if>
+    </set>
+    where block_id = #{blockId,jdbcType=INTEGER}
+  </update>
+
+  <delete id="deleteByBlockId" parameterType="Integer">
+    DELETE
+    FROM block
+    WHERE block_id = #{blockId}
+  </delete>
+
+  <update id="updateByPrimaryKey" parameterType="com.viscu.UI.domain.Block" >
+    update block
+    set block_describe = #{blockDescribe,jdbcType=VARCHAR},
+      block_name = #{blockName,jdbcType=VARCHAR},
+      block_article_num = #{blockArticleNum,jdbcType=INTEGER}
+    where block_id = #{blockId,jdbcType=INTEGER}
+  </update>
+</mapper>

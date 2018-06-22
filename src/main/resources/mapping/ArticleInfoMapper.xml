@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.viscu.UI.dao.ArticleInfoDao" >
+  <resultMap id="BaseResultMap" type="com.viscu.UI.domain.ArticleInfo" >
+    <id column="articleInfo_id" property="articleinfoId" jdbcType="INTEGER" />
+    <result column="articleInfo_replyIsRead" property="articleinfoReplyisread" jdbcType="INTEGER" />
+    <result column="articleInfo_articleId" property="articleinfoArticleid" jdbcType="INTEGER" />
+    <result column="articleInfo_articleType" property="articleinfoArticletype" jdbcType="INTEGER" />
+    <result column="articleInfo_articleUserName" property="articleinfoArticleusername" jdbcType="VARCHAR" />
+    <result column="articleInfo_isRead" property="articleinfoIsread" jdbcType="INTEGER" />
+    <result column="articleInfo_author" property="articleinfoAuthor" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    articleInfo_id, articleInfo_replyIsRead, articleInfo_articleId, articleInfo_articleType, 
+    articleInfo_articleUserName, articleInfo_isRead, articleInfo_author
+  </sql>
+
+  <select id="findByArticleInfoId" resultMap="BaseResultMap" parameterType="Integer">
+    SELECT <include refid="Base_Column_List" />
+    FROM articleInfo
+    WHERE articleInfo_id = #{articleInfoId}
+  </select>
+
+  <!--查找某个消息回复是否存在-->
+  <select id="findArticleInfoByArticleIdAndUsername" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from articleInfo
+    where (articleInfo_articleId= #{articleId} AND articleInfo_articleUserName = #{username} AND articleInfo_articleType = 1)
+    OR  (articleInfo_articleId= #{articleId} AND articleInfo_articleUserName = #{username} AND articleInfo_articleType = 2)
+  </select>
+
+  <select id="findAllArticleByArticleIsRead" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM articleInfo
+    WHERE articleInfo_author = #{username} AND articleInfo_isRead = #{isRead}
+  </select>
+
+  <select id="findAllArticleByUsername" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM articleInfo
+    WHERE articleInfo_author = #{articleAuthor}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from articleInfo
+    where articleInfo_id = #{articleinfoId,jdbcType=INTEGER}
+  </delete>
+
+  <select id="findByArticleUserNameAndType" resultMap="BaseResultMap">
+    <bind name="pattern" value="'%'+ username +'%'"/>
+    SELECT <include refid="Base_Column_List"/>
+    FROM articleInfo
+    WHERE articleInfo_articleUserName = #{username} AND articleInfo_articleType = #{type}
+    AND articleInfo_author NOT LIKE #{pattern}
+  </select>
+
+  <insert id="insert" parameterType="ArticleInfo" >
+    insert into articleInfo (articleInfo_id, articleInfo_replyIsRead, 
+      articleInfo_articleId, articleInfo_articleType, 
+      articleInfo_articleUserName, articleInfo_isRead, 
+      articleInfo_author)
+    values (#{articleinfoId,jdbcType=INTEGER}, #{articleinfoReplyisread,jdbcType=INTEGER}, 
+      #{articleinfoArticleid,jdbcType=INTEGER}, #{articleinfoArticletype,jdbcType=INTEGER}, 
+      #{articleinfoArticleusername,jdbcType=VARCHAR}, #{articleinfoIsread,jdbcType=INTEGER}, 
+      #{articleinfoAuthor,jdbcType=VARCHAR})
+  </insert>
+
+  <delete id="deleteByArticleIdAndUsername">
+    delete from articleInfo
+    WHERE articleInfo_articleId = #{articleId} AND articleInfo_articleUserName = #{username}
+  </delete>
+
+  <!--插入一条新的帖子消息记录-->
+  <insert id="addArticleInfo" parameterType="ArticleInfo" >
+    insert into articleInfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="articleinfoId != null" >
+        articleInfo_id,
+      </if>
+      <if test="articleinfoReplyisread != null" >
+        articleInfo_replyIsRead,
+      </if>
+      <if test="articleinfoArticleid != null" >
+        articleInfo_articleId,
+      </if>
+      <if test="articleinfoArticletype != null" >
+        articleInfo_articleType,
+      </if>
+      <if test="articleinfoArticleusername != null" >
+        articleInfo_articleUserName,
+      </if>
+      <if test="articleinfoIsread != null" >
+        articleInfo_isRead,
+      </if>
+      <if test="articleinfoAuthor != null" >
+        articleInfo_author,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="articleinfoId != null" >
+        #{articleinfoId,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoReplyisread != null" >
+        #{articleinfoReplyisread,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoArticleid != null" >
+        #{articleinfoArticleid,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoArticletype != null" >
+        #{articleinfoArticletype,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoArticleusername != null" >
+        #{articleinfoArticleusername,jdbcType=VARCHAR},
+      </if>
+      <if test="articleinfoIsread != null" >
+        #{articleinfoIsread,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoAuthor != null" >
+        #{articleinfoAuthor,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByArticleInfo" parameterType="ArticleInfo" >
+    update articleInfo
+    <set >
+      <if test="articleinfoReplyisread != null" >
+        articleInfo_replyIsRead = #{articleinfoReplyisread,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoArticleid != null" >
+        articleInfo_articleId = #{articleinfoArticleid,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoArticletype != null" >
+        articleInfo_articleType = #{articleinfoArticletype,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoArticleusername != null" >
+        articleInfo_articleUserName = #{articleinfoArticleusername,jdbcType=VARCHAR},
+      </if>
+      <if test="articleinfoIsread != null" >
+        articleInfo_isRead = #{articleinfoIsread,jdbcType=INTEGER},
+      </if>
+      <if test="articleinfoAuthor != null" >
+        articleInfo_author = #{articleinfoAuthor,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where articleInfo_id = #{articleinfoId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="ArticleInfo" >
+    update articleInfo
+    set articleInfo_replyIsRead = #{articleinfoReplyisread,jdbcType=INTEGER},
+      articleInfo_articleId = #{articleinfoArticleid,jdbcType=INTEGER},
+      articleInfo_articleType = #{articleinfoArticletype,jdbcType=INTEGER},
+      articleInfo_articleUserName = #{articleinfoArticleusername,jdbcType=VARCHAR},
+      articleInfo_isRead = #{articleinfoIsread,jdbcType=INTEGER},
+      articleInfo_author = #{articleinfoAuthor,jdbcType=VARCHAR}
+    where articleInfo_id = #{articleinfoId,jdbcType=INTEGER}
+  </update>
+</mapper>

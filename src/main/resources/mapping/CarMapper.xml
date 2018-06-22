@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.viscu.Car.dao.CarMapper" >
+  <resultMap id="BaseResultMap" type="com.viscu.Car.domain.Car" >
+    <result column="car_id" property="carId" jdbcType="INTEGER" />
+    <result column="car_type" property="carType" jdbcType="VARCHAR" />
+    <result column="car_carId" property="carCarid" jdbcType="VARCHAR" />
+    <result column="car_isRent" property="carIsrent" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="car_list">
+    car_id, car_type, car_carId,
+    car_isRent
+  </sql>
+
+  <!--查找某个类型的所有车辆-->
+  <select id="findAllByCarType" resultMap="BaseResultMap" resultType="String">
+    SELECT <include refid="car_list" />
+    FROM car
+    WHERE car_type = #{carType}
+  </select>
+
+  <insert id="insert" parameterType="com.viscu.Car.domain.Car" >
+    insert into car (car_id, car_type, car_carId,
+      car_isRent)
+    values (#{carId,jdbcType=INTEGER}, #{carType,jdbcType=VARCHAR}, #{carCarid,jdbcType=VARCHAR},
+      #{carIsrent,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.viscu.Car.domain.Car" >
+    insert into car
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="carId != null" >
+        car_id,
+      </if>
+      <if test="carType != null" >
+        car_type,
+      </if>
+      <if test="carCarid != null" >
+        car_carId,
+      </if>
+      <if test="carIsrent != null" >
+        car_isRent,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="carId != null" >
+        #{carId,jdbcType=INTEGER},
+      </if>
+      <if test="carType != null" >
+        #{carType,jdbcType=VARCHAR},
+      </if>
+      <if test="carCarid != null" >
+        #{carCarid,jdbcType=VARCHAR},
+      </if>
+      <if test="carIsrent != null" >
+        #{carIsrent,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+</mapper>

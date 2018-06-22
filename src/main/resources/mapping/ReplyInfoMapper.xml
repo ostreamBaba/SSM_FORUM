@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.viscu.UI.dao.ReplyInfoDao" >
+  <resultMap id="BaseResultMap" type="com.viscu.UI.domain.ReplyInfo" >
+    <result column="replyInfo_id" property="replyinfoId" jdbcType="INTEGER" />
+    <result column="replyInfo_replyId" property="replyinfoReplyid" jdbcType="INTEGER" />
+    <result column="replyInfo_type" property="replyinfoType" jdbcType="INTEGER" />
+    <result column="replyInfo_username" property="replyinfoUsername" jdbcType="VARCHAR" />
+    <result column="replyInfo_isRead" property="replyinfoIsread" jdbcType="INTEGER" />
+    <result column="replyInfo_author" property="replyinfoAuthor" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="replyInfo_List">
+    replyInfo_id, replyInfo_replyId, replyInfo_type,
+    replyInfo_username, replyInfo_isRead, replyInfo_author
+  </sql>
+
+  <!--更新 已读变成未读-->
+  <update id="updateReplyInfoByReplyInfo" parameterType="ReplyInfo">
+    UPDATE replyInfo
+    <set>
+      <if test="replyinfoId != null" >
+        replyInfo_id = #{replyinfoId,jdbcType=INTEGER},
+      </if>
+      <if test="replyinfoReplyid != null" >
+        replyInfo_replyId = #{replyinfoReplyid,jdbcType=INTEGER},
+      </if>
+      <if test="replyinfoType != null" >
+        replyInfo_type = #{replyinfoType,jdbcType=INTEGER},
+      </if>
+      <if test="replyinfoUsername != null" >
+        replyInfo_username = #{replyinfoUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="replyinfoIsread != null" >
+        replyInfo_isRead = #{replyinfoIsread,jdbcType=INTEGER},
+      </if>
+      <if test="replyinfoAuthor != null" >
+        replyInfo_author =  #{replyinfoAuthor,jdbcType=VARCHAR},
+      </if>
+    </set>
+    WHERE replyInfo_id = #{replyinfoId}
+  </update>
+
+  <!--查找某个用户所有的帖子回复消息-->
+  <select id="findAllReplyInfoByUserName" resultMap="BaseResultMap">
+    SELECT <include refid="replyInfo_List"/>
+    FROM replyInfo
+    WHERE replyInfo_author = #{replyinfoAuthor} AND replyInfo_type = 1
+  </select>
+
+  <!--根据消息id查找该消息-->
+  <select id="findByReplyInfoId" parameterType="Integer" resultMap="BaseResultMap">
+    SELECT <include refid="replyInfo_List"/>
+    FROM replyInfo
+    WHERE replyInfo_id = #{replyInfoId}
+  </select>
+
+  <!--查找某个用户所有的帖子未读回复消息-->
+  <select id="findAllReplyIsNotReadInfoByUserName" resultMap="BaseResultMap">
+    SELECT <include refid="replyInfo_List"/>
+    FROM replyInfo
+    WHERE replyInfo_author = #{username} AND replyInfo_isRead = #{isRead}
+  </select>
+
+  <!--根据id和作者查找本人是否对该帖子发表过意见-->
+  <select id="findByReplyIdAndReplyUser" resultMap="BaseResultMap">
+    SELECT <include refid="replyInfo_List" />
+    FROM replyInfo
+    WHERE (replyInfo_replyId = #{replyId} AND replyInfo_username = #{username} AND replyInfo_type = 1)
+    OR (replyInfo_replyId = #{replyId} AND replyInfo_username = #{username} AND replyInfo_type = 2)
+  </select>
+
+  <!--添加回复消息-->
+  <insert id="addReplyInfo" parameterType="ReplyInfo" >
+    insert into replyInfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="replyinfoId != null" >
+        replyInfo_id,
+      </if>
+      <if test="replyinfoReplyid != null" >
+        replyInfo_replyId,
+      </if>
+      <if test="replyinfoType != null" >
+        replyInfo_type,
+      </if>
+      <if test="replyinfoUsername != null" >
+        replyInfo_username,
+      </if>
+      <if test="replyinfoIsread != null" >
+        replyInfo_isRead,
+      </if>
+      <if test="replyinfoAuthor != null" >
+        replyInfo_author,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="replyinfoId != null" >
+        #{replyinfoId,jdbcType=INTEGER},
+      </if>
+      <if test="replyinfoReplyid != null" >
+        #{replyinfoReplyid,jdbcType=INTEGER},
+      </if>
+      <if test="replyinfoType != null" >
+        #{replyinfoType,jdbcType=INTEGER},
+      </if>
+      <if test="replyinfoUsername != null" >
+        #{replyinfoUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="replyinfoIsread != null" >
+        #{replyinfoIsread,jdbcType=INTEGER},
+      </if>
+      <if test="replyinfoAuthor != null" >
+        #{replyinfoAuthor,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!--删除回复消息-->
+  <select id="deleteByReplyId" parameterType="Integer">
+    DELETE FROM replyInfo
+    WHERE replyInfo_replyId = #{replyinfoReplyid}
+  </select>
+
+</mapper>

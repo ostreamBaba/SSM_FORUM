@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.viscu.UI.dao.ReplyDao" >
+  <resultMap id="BaseResultMap" type="com.viscu.UI.domain.Reply" >
+    <id column="reply_id" property="replyId" jdbcType="INTEGER" />
+    <result column="reply_article_id" property="replyArticleId" jdbcType="INTEGER" />
+    <result column="reply_user_name" property="replyUserName" jdbcType="VARCHAR" />
+    <result column="reply_good_count" property="replyGoodCount" jdbcType="INTEGER" />
+    <result column="reply_bad_count" property="replyBadCount" jdbcType="INTEGER" />
+    <result column="reply_create_time" property="replyCreateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.viscu.UI.domain.Reply" extends="BaseResultMap" >
+    <result column="reply_text" property="replyText" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    reply_id, reply_article_id, reply_user_name, reply_good_count, reply_bad_count, reply_create_time
+  </sql>
+  <sql id="Blob_Column_List" >
+    reply_text
+  </sql>
+
+  <select id="findByPage" parameterType="Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    FROM reply
+    <if test="start!=null and size!=null">
+      LIMIT #{start},#{size}
+    </if>
+  </select>
+
+  <select id="findAllReply" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    FROM reply
+  </select>
+
+  <!--插入并返回自增主键-->
+  <insert id="insertAndGetId" parameterType="Reply" useGeneratedKeys="true" keyProperty="replyId">
+    INSERT INTO reply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="replyId != null" >
+        reply_id,
+      </if>
+      <if test="replyArticleId != null" >
+        reply_article_id,
+      </if>
+      <if test="replyUserName != null" >
+        reply_user_name,
+      </if>
+      <if test="replyGoodCount != null" >
+        reply_good_count,
+      </if>
+      <if test="replyBadCount != null" >
+        reply_bad_count,
+      </if>
+      <if test="replyCreateTime != null" >
+        reply_create_time,
+      </if>
+      <if test="replyText != null" >
+        reply_text,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="replyId != null" >
+        #{replyId,jdbcType=INTEGER},
+      </if>
+      <if test="replyArticleId != null" >
+        #{replyArticleId,jdbcType=INTEGER},
+      </if>
+      <if test="replyUserName != null" >
+        #{replyUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="replyGoodCount != null" >
+        #{replyGoodCount,jdbcType=INTEGER},
+      </if>
+      <if test="replyBadCount != null" >
+        #{replyBadCount,jdbcType=INTEGER},
+      </if>
+      <if test="replyCreateTime != null" >
+        #{replyCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="replyText != null" >
+        #{replyText,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <!--<insert id="insertAndGetId" parameterType="Reply">
+    <selectKey keyProperty="replyId" order="AFTER" resultType="Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    INSERT INTO reply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="replyId != null" >
+        reply_id,
+      </if>
+      <if test="replyArticleId != null" >
+        reply_article_id,
+      </if>
+      <if test="replyUserName != null" >
+        reply_user_name,
+      </if>
+      <if test="replyGoodCount != null" >
+        reply_good_count,
+      </if>
+      <if test="replyBadCount != null" >
+        reply_bad_count,
+      </if>
+      <if test="replyCreateTime != null" >
+        reply_create_time,
+      </if>
+      <if test="replyText != null" >
+        reply_text,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="replyId != null" >
+        #{replyId,jdbcType=INTEGER},
+      </if>
+      <if test="replyArticleId != null" >
+        #{replyArticleId,jdbcType=INTEGER},
+      </if>
+      <if test="replyUserName != null" >
+        #{replyUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="replyGoodCount != null" >
+        #{replyGoodCount,jdbcType=INTEGER},
+      </if>
+      <if test="replyBadCount != null" >
+        #{replyBadCount,jdbcType=INTEGER},
+      </if>
+      <if test="replyCreateTime != null" >
+        #{replyCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="replyText != null" >
+        #{replyText,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>-->
+
+  <!--查找某个帖子所有的回复-->
+  <select id="findReplyListByArticleId" resultMap="BaseResultMap" parameterType="Integer">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    FROM reply
+    WHERE reply_article_id = #{ArticleId,jdbcType=INTEGER}
+  </select>
+
+  <!--通过某个id查找某个回复-->
+  <select id="findReplyById" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from reply
+    where reply_id = #{replyId,jdbcType=INTEGER}
+  </select>
+
+
+
+  <delete id="deleteReplyById" parameterType="java.lang.Integer" >
+    delete from reply
+    where reply_id = #{replyId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="Reply" >
+    insert into reply (reply_id, reply_article_id, reply_user_name, 
+      reply_good_count, reply_bad_count, reply_create_time, 
+      reply_text)
+    values (#{replyId,jdbcType=INTEGER}, #{replyArticleId,jdbcType=INTEGER}, #{replyUserName,jdbcType=VARCHAR}, 
+      #{replyGoodCount,jdbcType=INTEGER}, #{replyBadCount,jdbcType=INTEGER}, #{replyCreateTime,jdbcType=TIMESTAMP}, 
+      #{replyText,jdbcType=LONGVARCHAR})
+  </insert>
+  <!--添加回复-->
+  <insert id="addReply" parameterType="com.viscu.UI.domain.Reply">
+    insert into reply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="replyId != null" >
+        reply_id,
+      </if>
+      <if test="replyArticleId != null" >
+        reply_article_id,
+      </if>
+      <if test="replyUserName != null" >
+        reply_user_name,
+      </if>
+      <if test="replyGoodCount != null" >
+        reply_good_count,
+      </if>
+      <if test="replyBadCount != null" >
+        reply_bad_count,
+      </if>
+      <if test="replyCreateTime != null" >
+        reply_create_time,
+      </if>
+      <if test="replyText != null" >
+        reply_text,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="replyId != null" >
+        #{replyId,jdbcType=INTEGER},
+      </if>
+      <if test="replyArticleId != null" >
+        #{replyArticleId,jdbcType=INTEGER},
+      </if>
+      <if test="replyUserName != null" >
+        #{replyUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="replyGoodCount != null" >
+        #{replyGoodCount,jdbcType=INTEGER},
+      </if>
+      <if test="replyBadCount != null" >
+        #{replyBadCount,jdbcType=INTEGER},
+      </if>
+      <if test="replyCreateTime != null" >
+        #{replyCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="replyText != null" >
+        #{replyText,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <!--更新某个帖子-->
+  <update id="updateReply" parameterType="com.viscu.UI.domain.Reply" >
+    update reply
+    <set >
+      <if test="replyArticleId != null" >
+        reply_article_id = #{replyArticleId,jdbcType=INTEGER},
+      </if>
+      <if test="replyUserName != null" >
+        reply_user_name = #{replyUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="replyGoodCount != null" >
+        reply_good_count = #{replyGoodCount,jdbcType=INTEGER},
+      </if>
+      <if test="replyBadCount != null" >
+        reply_bad_count = #{replyBadCount,jdbcType=INTEGER},
+      </if>
+      <if test="replyCreateTime != null" >
+        reply_create_time = #{replyCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="replyText != null" >
+        reply_text = #{replyText,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where reply_id = #{replyId,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.viscu.UI.domain.Reply" >
+    update reply
+    set reply_article_id = #{replyArticleId,jdbcType=INTEGER},
+      reply_user_name = #{replyUserName,jdbcType=VARCHAR},
+      reply_good_count = #{replyGoodCount,jdbcType=INTEGER},
+      reply_bad_count = #{replyBadCount,jdbcType=INTEGER},
+      reply_create_time = #{replyCreateTime,jdbcType=TIMESTAMP},
+      reply_text = #{replyText,jdbcType=LONGVARCHAR}
+    where reply_id = #{replyId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.viscu.UI.domain.Reply" >
+    update reply
+    set reply_article_id = #{replyArticleId,jdbcType=INTEGER},
+      reply_user_name = #{replyUserName,jdbcType=VARCHAR},
+      reply_good_count = #{replyGoodCount,jdbcType=INTEGER},
+      reply_bad_count = #{replyBadCount,jdbcType=INTEGER},
+      reply_create_time = #{replyCreateTime,jdbcType=TIMESTAMP}
+    where reply_id = #{replyId,jdbcType=INTEGER}
+  </update>
+</mapper>

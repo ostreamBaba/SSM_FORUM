@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.viscu.UI.dao.ArticleDao" >
+  <resultMap id="BaseResultMap" type="com.viscu.UI.domain.Article" >
+    <id column="article_id" property="articleId" jdbcType="INTEGER" />
+    <result column="block_id" property="blockId" jdbcType="INTEGER" />
+    <result column="article_user_name" property="articleUserName" jdbcType="VARCHAR" />
+    <result column="article_title" property="articleTitle" jdbcType="VARCHAR" />
+    <result column="article_browse_count" property="articleBrowseCount" jdbcType="INTEGER" />
+    <result column="article_good_count" property="articleGoodCount" jdbcType="INTEGER" />
+    <result column="article_bad_count" property="articleBadCount" jdbcType="INTEGER" />
+    <result column="article_reply_count" property="articleReplyCount" jdbcType="INTEGER" />
+    <result column="article_create_time" property="articleCreateTime" jdbcType="TIMESTAMP" />
+    <result column="article_last_reply_time" property="articleLastReplyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.viscu.UI.domain.Article" extends="BaseResultMap" >
+    <result column="article_content" property="articleContent" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    article_id, block_id, article_user_name, article_title, article_browse_count, article_good_count, 
+    article_bad_count, article_reply_count, article_create_time, article_last_reply_time
+  </sql>
+  <sql id="Blob_Column_List" >
+    article_content
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from article
+    where article_id = #{articleId,jdbcType=INTEGER}
+  </select>
+
+  <!--通过帖子id查找帖子-->
+  <select id="findById" resultMap="ResultMapWithBLOBs" parameterType="Integer">
+    SELECT
+    <include refid="Base_Column_List"/>,<include refid="Blob_Column_List"/>
+    FROM article
+    where article_id = #{articleId,jdbcType=INTEGER}
+  </select>
+
+  <!--通过帖子名字查找帖子-->
+  <select id="findAllByUserName" resultMap="ResultMapWithBLOBs" parameterType="String">
+    SELECT
+    <include refid="Base_Column_List"/>,<include refid="Blob_Column_List"/>
+    FROM article
+    where article_user_name = #{articleUserName}
+  </select>
+
+  <!--通过版块查找所有文章-->
+  <select id="findArticleAllByBlockId" resultMap="ResultMapWithBLOBs" parameterType="Integer">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from article
+    where block_id = #{blockId,jdbcType=INTEGER}
+  </select>
+
+  <!--查找所有的文章-->
+  <select id="findAllArticle" resultMap="ResultMapWithBLOBs">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from article
+  </select>
+
+  <!--更新帖子-->
+  <update id="updateArticle" parameterType="Article" >
+    update article
+    <set >
+      <if test="blockId != null" >
+        block_id = #{blockId,jdbcType=INTEGER},
+      </if>
+      <if test="articleUserName != null" >
+        article_user_name = #{articleUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="articleTitle != null" >
+        article_title = #{articleTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="articleBrowseCount != null" >
+        article_browse_count = #{articleBrowseCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleGoodCount != null" >
+        article_good_count = #{articleGoodCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleBadCount != null" >
+        article_bad_count = #{articleBadCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleReplyCount != null" >
+        article_reply_count = #{articleReplyCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleCreateTime != null" >
+        article_create_time = #{articleCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="articleLastReplyTime != null" >
+        article_last_reply_time = #{articleLastReplyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="articleContent != null" >
+        article_content = #{articleContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where article_id = #{articleId,jdbcType=INTEGER}
+  </update>
+
+  <!--查找前十条浏览量最高的文章-->
+  <select id="findTop10ArticleDesc" resultMap="ResultMapWithBLOBs">
+      SELECT
+      <include refid="Base_Column_List" />
+      ,
+      <include refid="Blob_Column_List" />
+      FROM article
+      ORDER BY
+      article_browse_count DESC
+      LIMIT 0, 10
+  </select>
+
+  <select id="findByPage" parameterType="Map" resultMap="ResultMapWithBLOBs">
+    SELECT
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    FROM article
+    <if test="start!=null and size!=null">
+        LIMIT #{start}, #{size}
+    </if>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from article
+    where article_id = #{articleId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.viscu.UI.domain.Article" >
+    insert into article (article_id, block_id, article_user_name, 
+      article_title, article_browse_count, article_good_count, 
+      article_bad_count, article_reply_count, article_create_time, 
+      article_last_reply_time, article_content
+      )
+    values (#{articleId,jdbcType=INTEGER}, #{blockId,jdbcType=INTEGER}, #{articleUserName,jdbcType=VARCHAR}, 
+      #{articleTitle,jdbcType=VARCHAR}, #{articleBrowseCount,jdbcType=INTEGER}, #{articleGoodCount,jdbcType=INTEGER}, 
+      #{articleBadCount,jdbcType=INTEGER}, #{articleReplyCount,jdbcType=INTEGER}, #{articleCreateTime,jdbcType=TIMESTAMP}, 
+      #{articleLastReplyTime,jdbcType=TIMESTAMP}, #{articleContent,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="addArticle" parameterType="com.viscu.UI.domain.Article" >
+    insert into article
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="articleId != null" >
+        article_id,
+      </if>
+      <if test="blockId != null" >
+        block_id,
+      </if>
+      <if test="articleUserName != null" >
+        article_user_name,
+      </if>
+      <if test="articleTitle != null" >
+        article_title,
+      </if>
+      <if test="articleBrowseCount != null" >
+        article_browse_count,
+      </if>
+      <if test="articleGoodCount != null" >
+        article_good_count,
+      </if>
+      <if test="articleBadCount != null" >
+        article_bad_count,
+      </if>
+      <if test="articleReplyCount != null" >
+        article_reply_count,
+      </if>
+      <if test="articleCreateTime != null" >
+        article_create_time,
+      </if>
+      <if test="articleLastReplyTime != null" >
+        article_last_reply_time,
+      </if>
+      <if test="articleContent != null" >
+        article_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="articleId != null" >
+        #{articleId,jdbcType=INTEGER},
+      </if>
+      <if test="blockId != null" >
+        #{blockId,jdbcType=INTEGER},
+      </if>
+      <if test="articleUserName != null" >
+        #{articleUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="articleTitle != null" >
+        #{articleTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="articleBrowseCount != null" >
+        #{articleBrowseCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleGoodCount != null" >
+        #{articleGoodCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleBadCount != null" >
+        #{articleBadCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleReplyCount != null" >
+        #{articleReplyCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleCreateTime != null" >
+        #{articleCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="articleLastReplyTime != null" >
+        #{articleLastReplyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="articleContent != null" >
+        #{articleContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.viscu.UI.domain.Article" >
+    update article
+    <set >
+      <if test="blockId != null" >
+        block_id = #{blockId,jdbcType=INTEGER},
+      </if>
+      <if test="articleUserName != null" >
+        article_user_name = #{articleUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="articleTitle != null" >
+        article_title = #{articleTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="articleBrowseCount != null" >
+        article_browse_count = #{articleBrowseCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleGoodCount != null" >
+        article_good_count = #{articleGoodCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleBadCount != null" >
+        article_bad_count = #{articleBadCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleReplyCount != null" >
+        article_reply_count = #{articleReplyCount,jdbcType=INTEGER},
+      </if>
+      <if test="articleCreateTime != null" >
+        article_create_time = #{articleCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="articleLastReplyTime != null" >
+        article_last_reply_time = #{articleLastReplyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="articleContent != null" >
+        article_content = #{articleContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where article_id = #{articleId,jdbcType=INTEGER}
+  </update>
+
+  <delete id="deleteById" parameterType="Integer">
+    DELETE
+    FROM article
+    WHERE article_id = #{id}
+  </delete>
+
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.viscu.UI.domain.Article" >
+    update article
+    set block_id = #{blockId,jdbcType=INTEGER},
+      article_user_name = #{articleUserName,jdbcType=VARCHAR},
+      article_title = #{articleTitle,jdbcType=VARCHAR},
+      article_browse_count = #{articleBrowseCount,jdbcType=INTEGER},
+      article_good_count = #{articleGoodCount,jdbcType=INTEGER},
+      article_bad_count = #{articleBadCount,jdbcType=INTEGER},
+      article_reply_count = #{articleReplyCount,jdbcType=INTEGER},
+      article_create_time = #{articleCreateTime,jdbcType=TIMESTAMP},
+      article_last_reply_time = #{articleLastReplyTime,jdbcType=TIMESTAMP},
+      article_content = #{articleContent,jdbcType=LONGVARCHAR}
+    where article_id = #{articleId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.viscu.UI.domain.Article" >
+    update article
+    set block_id = #{blockId,jdbcType=INTEGER},
+      article_user_name = #{articleUserName,jdbcType=VARCHAR},
+      article_title = #{articleTitle,jdbcType=VARCHAR},
+      article_browse_count = #{articleBrowseCount,jdbcType=INTEGER},
+      article_good_count = #{articleGoodCount,jdbcType=INTEGER},
+      article_bad_count = #{articleBadCount,jdbcType=INTEGER},
+      article_reply_count = #{articleReplyCount,jdbcType=INTEGER},
+      article_create_time = #{articleCreateTime,jdbcType=TIMESTAMP},
+      article_last_reply_time = #{articleLastReplyTime,jdbcType=TIMESTAMP}
+    where article_id = #{articleId,jdbcType=INTEGER}
+  </update>
+</mapper>

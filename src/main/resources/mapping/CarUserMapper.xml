@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.viscu.Car.dao.CarUserMapper">
+  <resultMap id="BaseResultMap" type="com.viscu.Car.domain.CarUser">
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="user_caraId" jdbcType="INTEGER" property="userCaraid" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="user_password" jdbcType="VARCHAR" property="userPassword" />
+    <result column="user_sex" jdbcType="VARCHAR" property="userSex" />
+    <result column="user_phone_num" jdbcType="VARCHAR" property="userPhoneNum" />
+    <result column="user_license_no" jdbcType="VARCHAR" property="userLicenseNo" />
+    <result column="user_license_type" jdbcType="VARCHAR" property="userLicenseType" />
+  </resultMap>
+
+  <sql id="Car_List">
+    user_id, user_caraId, user_name,
+    user_password, user_sex, user_phone_num,
+    user_license_no, user_license_type
+  </sql>
+
+
+  <insert id="insert" parameterType="com.viscu.Car.domain.CarUser">
+    insert into car_user (user_id, user_caraId, user_name, 
+      user_password, user_sex, user_phone_num, 
+      user_license_no, user_license_type)
+    values (#{userId,jdbcType=INTEGER}, #{userCaraid,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, 
+      #{userPassword,jdbcType=VARCHAR}, #{userSex,jdbcType=VARCHAR}, #{userPhoneNum,jdbcType=VARCHAR}, 
+      #{userLicenseNo,jdbcType=VARCHAR}, #{userLicenseType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="addUser" parameterType="com.viscu.Car.domain.CarUser">
+    insert into car_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="userCaraid != null">
+        user_caraId,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="userPassword != null">
+        user_password,
+      </if>
+      <if test="userSex != null">
+        user_sex,
+      </if>
+      <if test="userPhoneNum != null">
+        user_phone_num,
+      </if>
+      <if test="userLicenseNo != null">
+        user_license_no,
+      </if>
+      <if test="userLicenseType != null">
+        user_license_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="userCaraid != null">
+        #{userCaraid,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userPassword != null">
+        #{userPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="userSex != null">
+        #{userSex,jdbcType=VARCHAR},
+      </if>
+      <if test="userPhoneNum != null">
+        #{userPhoneNum,jdbcType=VARCHAR},
+      </if>
+      <if test="userLicenseNo != null">
+        #{userLicenseNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userLicenseType != null">
+        #{userLicenseType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="findUserByUsername" parameterType="String" resultMap="BaseResultMap">
+    SELECT <include refid="Car_List" />
+    FROM car_user
+    WHERE user_name = #{userName}
+  </select>
+
+</mapper>
