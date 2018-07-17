@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context = "http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+  <!--扫描包中所有的注解-->
+  <context:component-scan base-package="com.viscu.UI"/>
+  <context:component-scan base-package="com.viscu.Car"/>
+
+  <!-- 静态资源(js、image等)的访问 -->
+  <mvc:default-servlet-handler/>
+  <mvc:resources mapping="/resources/**" location="/WEB-INF/resources/" />
+
+  <!--<mvc:view-controller path="/" view-name="index"/>-->
+  <mvc:view-controller path="/register" view-name="register"/>
+  <mvc:view-controller path="/login" view-name="login"/>
+  <mvc:view-controller path="/userInfo" view-name="user/userInfo"/>
+  <mvc:view-controller path="/reset" view-name="reset"/>
+  <mvc:view-controller path="/writing" view-name="article/writing"/>
+  <mvc:view-controller path="/articleInfo" view-name="article/articleInfo"/>
+  <mvc:view-controller path="/blockMain" view-name="block/blockMain"/>
+  <mvc:view-controller path="/blockInfo" view-name="block/blockInfo"/>
+  <mvc:view-controller path="/forget" view-name="forget"/>
+  <mvc:view-controller path="/error" view-name="error"/>
+  <mvc:view-controller path="/setting123" view-name="user/userSetting"/>
+
+  <!-- 开启注解，并解决@ResponseBody 的实现类其默认的编码是 iso-8859-1的问题  -->
+  <mvc:annotation-driven>
+    <mvc:message-converters>
+      <!-- default StringHttpMessageConverter, solve encoding problem -->
+      <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg value="UTF-8" />
+        <property name="writeAcceptCharset" value="false" />
+      </bean>
+    </mvc:message-converters>
+  </mvc:annotation-driven>
+
+  <!--ViewResolver 视图解析器-->
+  <!--用于支持Servlet、JSP视图解析-->
+  <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/classes/view/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+
+
+  <!-- 配置上传文件-->
+  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="defaultEncoding" value="utf-8" />
+    <property name="maxUploadSize" value="10485760" />
+  </bean>
+
+  <mvc:interceptors>
+    <mvc:interceptor>
+      <mvc:mapping path="/**"/>    <!-- 进行拦截：/**表示拦截所有controller -->
+      <!--<mvc:exclude-mapping path=""></mvc:exclude-mapping>--> <!-- 不进行拦截 -->
+      <bean id="RuntimeInterceptor" class="com.viscu.UI.util.interceptor.RuntimeInterceptor">
+      </bean>
+    </mvc:interceptor>
+
+    <!--对用户是否登录设置拦截-->
+   <!-- <mvc:interceptor>
+      <mvc:mapping path="/article/**"/>
+      <bean id="AuthorizationInterceptor" class="com.viscu.UI.util.interceptor.AuthorizationInterceptor" />
+    </mvc:interceptor>-->
+
+  </mvc:interceptors>
+
+
+</beans>
